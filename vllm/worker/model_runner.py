@@ -1834,6 +1834,8 @@ class ModelRunner(GPUModelRunnerBase[ModelInputForGPUWithSamplingMetadata]):
 
         return [output]
 
+        
+
     def need_recv_kv(self, model_input, kv_caches) -> bool:
         """Check if we need to receive kv-cache from the other worker.
         We need to receive KV when

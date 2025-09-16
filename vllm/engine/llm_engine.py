@@ -233,6 +233,11 @@ class LLMEngine:
         self.log_stats = log_stats
         self.use_cached_outputs = use_cached_outputs
 
+        #<ITIF>
+        # somewhere in your LLMEngine __init__ 或 EngineArgs
+        self.enable_patch_insertion = True  # 默认开
+
+
         if self.model_config.skip_tokenizer_init:
             self.tokenizer = None
             self.detokenizer = None
@@ -1330,7 +1335,19 @@ class LLMEngine:
             try:
                 outputs = self.model_executor.execute_model(
                     execute_model_req=execute_model_req)
+
+                # ✅ 用开关控制是否启用 patch 插入<ITIF>
+                if getattr(self, "enable_patch_insertion", False):
+                    from my_hooks.embedding_inserter import process_and_insert_patches
+                    outputs = process_and_insert_patches(
+                        outputs,
+                        seq_group_metadata_list,
+                        self.seq_id_to_seq_group
+                    )
+
+
                 self._skip_scheduling_next_step = False
+
             except InputProcessingError as e:
                 # The input for this request cannot be processed, so we must
                 # abort it. If there are remaining requests in the batch that

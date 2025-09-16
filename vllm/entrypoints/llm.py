@@ -401,6 +401,8 @@ class LLM:
         is_deprecated=lambda: LLM.DEPRECATE_LEGACY,
         additional_message="Please use the 'prompts' parameter instead.",
     )
+
+    #<ITIF>
     def generate(
         self,
         prompts: Union[Union[PromptType, Sequence[PromptType]],
@@ -485,7 +487,8 @@ class LLM:
             tokenization_kwargs=tokenization_kwargs,
             priority=priority,
         )
-
+        
+        #<ITIF>
         outputs = self._run_engine(use_tqdm=use_tqdm)
         return self.engine_class.validate_outputs(outputs, RequestOutput)
 
@@ -1706,6 +1709,7 @@ class LLM:
         total_in_toks = 0
         total_out_toks = 0
         while self.llm_engine.has_unfinished_requests():
+            
             step_outputs = self.llm_engine.step()
             for output in step_outputs:
                 if output.finished:
